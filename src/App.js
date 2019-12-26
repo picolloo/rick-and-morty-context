@@ -1,7 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, Suspense, lazy } from "react";
 
 import { Store } from "./store";
-import "./App.css";
+import "./index.css";
+
+const CardList = lazy(() => import("./CardList"));
 
 function App() {
   const { state, dispatch } = useContext(Store);
@@ -47,26 +49,9 @@ function App() {
         <span>Favourite(s): {state.episodes.filter(ep => ep.fav).length}</span>
       </div>
 
-      <div>
-        <ul className="card-grid">
-          {state.episodes.map(ep => (
-            <li
-              key={ep.id}
-              className={`card-item ${!ep.fav && "fade"}`}
-              onClick={() => handleToggleFavEvent(ep)}
-            >
-              <img src={ep.image.medium} />
-              <div>{ep.name}</div>
-
-              <section>
-                <div>
-                  Season: {ep.season} Number: {ep.number}
-                </div>
-              </section>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <CardList episodes={state.episodes} onFavorite={handleToggleFavEvent} />
+      </Suspense>
     </div>
   );
 }
