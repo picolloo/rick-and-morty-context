@@ -9,7 +9,7 @@ export default function CardList({ episodes, onFavorite }) {
         <CardItem
           key={ep.id}
           id={ep.id}
-          onFavourite={onFavorite}
+          onFavorite={onFavorite}
           fav={ep.fav}
           image={ep.image.medium}
           name={ep.name}
