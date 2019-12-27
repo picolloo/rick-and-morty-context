@@ -1,57 +1,46 @@
-import React, { useContext, useEffect, Suspense, lazy } from "react";
+import React, { useContext } from "react";
+import { Route, BrowserRouter, Switch } from "react-router-dom";
 
-import { Store } from "./store";
 import "./index.css";
+import { Store } from "./store";
 
-const CardList = lazy(() => import("./CardList"));
+import Header from "./components/Header";
+import Home from "./pages/HomePage";
+import FavPage from "./pages/FavPage";
 
 function App() {
   const { state, dispatch } = useContext(Store);
 
-  useEffect(() => {
-    const fetchEpisodes = async () => {
-      const data = await fetch(
-        "https://api.tvmaze.com/singlesearch/shows?q=rick-&-morty&embed=episodes"
-      );
-      const dataJSON = await data.json();
-
-      return dispatch({
-        type: "FETCH_DATA",
-        payload: dataJSON._embedded.episodes
-      });
-    };
-
-    fetchEpisodes();
-  }, []);
-
-  const handleToggleFavEvent = episode => {
-    if (!episode.fav) {
-      return dispatch({
-        type: "ADD_FAV",
-        payload: { id: episode.id }
-      });
-    }
-
-    dispatch({
-      type: "DEL_FAV",
-      payload: { id: episode.id }
-    });
+  const handleToggleFavEvent = (id, fav) => {
+    fav
+      ? dispatch({
+          type: "DEL_FAV",
+          payload: { id }
+        })
+      : dispatch({
+          type: "ADD_FAV",
+          payload: { id }
+        });
   };
 
   return (
     <div className="App">
-      <div className="header">
-        <div>
-          <h2>Rick and morty</h2>
-          <span>Pick your favourites episodes:</span>
-        </div>
+      <BrowserRouter>
+        <Header favouriteCount={state.episodes.filter(ep => ep.fav).length} />
 
-        <span>Favourite(s): {state.episodes.filter(ep => ep.fav).length}</span>
-      </div>
-
-      <Suspense fallback={<div>Loading...</div>}>
-        <CardList episodes={state.episodes} onFavorite={handleToggleFavEvent} />
-      </Suspense>
+        <Switch>
+          <Route
+            path="/"
+            exact
+            component={() => <Home onToggleFav={handleToggleFavEvent} />}
+          />
+          <Route
+            path="/favourites"
+            exact
+            component={() => <FavPage onToggleFav={handleToggleFavEvent} />}
+          />
+        </Switch>
+      </BrowserRouter>
     </div>
   );
 }

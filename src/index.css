@@ -3,6 +3,8 @@
   box-sizing: border-box;
 }
 
+/* HEADER */
+
 .header {
   position: sticky;
   display: flex;
@@ -22,6 +24,18 @@
 .header * {
   margin: 0;
 }
+
+.nav-link {
+  color: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-link + .nav-link {
+  margin-left: 0.5em;
+}
+
+/* GRID */
 
 .card-grid {
   list-style: none;
